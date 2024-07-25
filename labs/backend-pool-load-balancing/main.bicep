@@ -189,7 +189,7 @@ resource backendOpenAI 'Microsoft.ApiManagement/service/backends@2023-09-01-prev
       rules: [
         {
           failureCondition: {
-            count: 3
+            count: 1
             errorReasons: [
               'Server errors'
             ]
