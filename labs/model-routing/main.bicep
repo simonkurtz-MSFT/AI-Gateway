@@ -148,7 +148,7 @@ resource cognitiveServices_1 'Microsoft.CognitiveServices/accounts@2021-10-01' =
   sku: {
     name: openAISku
   }
-  kind: 'OpenAI'  
+  kind: 'OpenAI'
   properties: {
     apiProperties: {
       statisticsEnabled: false
@@ -163,7 +163,7 @@ resource cognitiveServices_2 'Microsoft.CognitiveServices/accounts@2021-10-01' =
   sku: {
     name: openAISku
   }
-  kind: 'OpenAI'  
+  kind: 'OpenAI'
   properties: {
     apiProperties: {
       statisticsEnabled: false
@@ -179,7 +179,7 @@ resource cognitiveServices_3 'Microsoft.CognitiveServices/accounts@2021-10-01' =
   sku: {
     name: openAISku
   }
-  kind: 'OpenAI'  
+  kind: 'OpenAI'
   properties: {
     apiProperties: {
       statisticsEnabled: false
@@ -236,7 +236,7 @@ resource deployment_3 'Microsoft.CognitiveServices/accounts/deployments@2023-05-
   }
 }]
 
-resource apimService 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
+resource apimService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: '${apimResourceName}-${resourceSuffix}'
   location: apimResourceLocation
   sku: {
@@ -249,7 +249,7 @@ resource apimService 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
   }
   identity: {
     type: 'SystemAssigned'
-  } 
+  }
 }
 
 var roleDefinitionID = resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')
@@ -283,7 +283,7 @@ resource roleAssignment_3 'Microsoft.Authorization/roleAssignments@2022-04-01' =
   }
 }]
 
-resource api 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
+resource api 'Microsoft.ApiManagement/service/apis@2023-09-01-preview' = {
     name: openAIAPIName
     parent: apimService
     properties: {
@@ -305,7 +305,7 @@ resource api 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
     }
   }
 
-resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2021-12-01-preview' = {
+resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-09-01-preview' = {
   name: 'policy'
   parent: api
   properties: {
@@ -319,13 +319,13 @@ var circuitBreaker = {
   rules: [
     {
       failureCondition: {
-        count: 3
+        count: 1
         errorReasons: [
           'Server errors'
         ]
         interval: 'PT5M'
         statusCodeRanges: [
-          { 
+          {
             min: 429
             max: 429
           }, {
@@ -336,46 +336,46 @@ var circuitBreaker = {
       }
       name: 'myBreakerRule'
       tripDuration: 'PT1M'
-      // acceptRetryAfter: true    // respects the Retry-After header
+      acceptRetryAfter: true    // respects the Retry-After header
     }
   ]
 }
 
 
-resource backendOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = [for (config, i) in openAIConfig_1: if(length(openAIConfig_1) > 0) {
+resource backendOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = [for (config, i) in openAIConfig_1: if(length(openAIConfig_1) > 0) {
   name: config.name
   parent: apimService
   properties: {
     description: 'backend description'
     url: '${cognitiveServices_1[i].properties.endpoint}/openai'
     protocol: 'http'
-    circuitBreaker: circuitBreaker  
+    circuitBreaker: circuitBreaker
   }
 }]
 
-resource backendOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = [for (config, i) in openAIConfig_2: if(length(openAIConfig_2) > 0) {
+resource backendOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = [for (config, i) in openAIConfig_2: if(length(openAIConfig_2) > 0) {
   name: config.name
   parent: apimService
   properties: {
     description: 'backend description'
     url: '${cognitiveServices_2[i].properties.endpoint}/openai'
     protocol: 'http'
-    circuitBreaker: circuitBreaker  
+    circuitBreaker: circuitBreaker
   }
 }]
 
-resource backendOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = [for (config, i) in openAIConfig_3: if(length(openAIConfig_3) > 0) {
+resource backendOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = [for (config, i) in openAIConfig_3: if(length(openAIConfig_3) > 0) {
   name: config.name
   parent: apimService
   properties: {
     description: 'backend description'
     url: '${cognitiveServices_3[i].properties.endpoint}/openai'
     protocol: 'http'
-    circuitBreaker: circuitBreaker  
+    circuitBreaker: circuitBreaker
   }
 }]
 
-resource backendPoolOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = if(length(openAIConfig_1) > 1) {
+resource backendPoolOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if(length(openAIConfig_1) > 1) {
   name: openAIBackendPoolName_1
   parent: apimService
   #disable-next-line BCP035
@@ -391,7 +391,7 @@ resource backendPoolOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-0
   }
 }
 
-resource backendPoolOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = if(length(openAIConfig_2) > 1) {
+resource backendPoolOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if(length(openAIConfig_2) > 1) {
   name: openAIBackendPoolName_2
   parent: apimService
   #disable-next-line BCP035
@@ -407,7 +407,7 @@ resource backendPoolOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-0
   }
 }
 
-resource backendPoolOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = if(length(openAIConfig_3) > 1) {
+resource backendPoolOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if(length(openAIConfig_3) > 1) {
   name: openAIBackendPoolName_3
   parent: apimService
   #disable-next-line BCP035
@@ -423,7 +423,7 @@ resource backendPoolOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-0
   }
 }
 
-resource apimSubscription 'Microsoft.ApiManagement/service/subscriptions@2023-05-01-preview' = {
+resource apimSubscription 'Microsoft.ApiManagement/service/subscriptions@2023-09-01-preview' = {
   name: openAISubscriptionName
   parent: apimService
   properties: {
@@ -459,7 +459,7 @@ resource diagnosticSettings_1 'Microsoft.Insights/diagnosticSettings@2021-05-01-
     metrics: [
       {
         category: 'AllMetrics'
-        enabled: true 
+        enabled: true
       }
     ]
   }
@@ -474,7 +474,7 @@ resource diagnosticSettings_2 'Microsoft.Insights/diagnosticSettings@2021-05-01-
     metrics: [
       {
         category: 'AllMetrics'
-        enabled: true 
+        enabled: true
       }
     ]
   }
@@ -536,9 +536,9 @@ resource apiDiagnostics 'Microsoft.ApiManagement/service/apis/diagnostics@2022-0
 resource workbook 'Microsoft.Insights/workbooks@2022-04-01' = {
   name: guid(resourceGroup().id, workbookName)
   location: workbookLocation
-  kind: 'shared'  
+  kind: 'shared'
   properties: {
-    displayName: workbookDisplayName    
+    displayName: workbookDisplayName
     serializedData: loadTextContent('openai-usage-analysis-workbook.json')
     sourceId: applicationInsights.id
     category: 'OpenAI'
