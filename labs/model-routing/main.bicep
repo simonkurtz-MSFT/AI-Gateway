@@ -236,7 +236,7 @@ resource deployment_3 'Microsoft.CognitiveServices/accounts/deployments@2023-05-
   }
 }]
 
-resource apimService 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
+resource apimService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: '${apimResourceName}-${resourceSuffix}'
   location: apimResourceLocation
   sku: {
@@ -283,7 +283,7 @@ resource roleAssignment_3 'Microsoft.Authorization/roleAssignments@2022-04-01' =
   }
 }]
 
-resource api 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
+resource api 'Microsoft.ApiManagement/service/apis@2023-09-01-preview' = {
     name: openAIAPIName
     parent: apimService
     properties: {
@@ -305,7 +305,7 @@ resource api 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
     }
   }
 
-resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2021-12-01-preview' = {
+resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-09-01-preview' = {
   name: 'policy'
   parent: api
   properties: {
@@ -319,7 +319,7 @@ var circuitBreaker = {
   rules: [
     {
       failureCondition: {
-        count: 3
+        count: 1
         errorReasons: [
           'Server errors'
         ]
@@ -336,13 +336,13 @@ var circuitBreaker = {
       }
       name: 'myBreakerRule'
       tripDuration: 'PT1M'
-      // acceptRetryAfter: true    // respects the Retry-After header
+      acceptRetryAfter: true    // respects the Retry-After header
     }
   ]
 }
 
 
-resource backendOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = [for (config, i) in openAIConfig_1: if(length(openAIConfig_1) > 0) {
+resource backendOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = [for (config, i) in openAIConfig_1: if(length(openAIConfig_1) > 0) {
   name: config.name
   parent: apimService
   properties: {
@@ -353,7 +353,7 @@ resource backendOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-01-pr
   }
 }]
 
-resource backendOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = [for (config, i) in openAIConfig_2: if(length(openAIConfig_2) > 0) {
+resource backendOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = [for (config, i) in openAIConfig_2: if(length(openAIConfig_2) > 0) {
   name: config.name
   parent: apimService
   properties: {
@@ -364,7 +364,7 @@ resource backendOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-01-pr
   }
 }]
 
-resource backendOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = [for (config, i) in openAIConfig_3: if(length(openAIConfig_3) > 0) {
+resource backendOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = [for (config, i) in openAIConfig_3: if(length(openAIConfig_3) > 0) {
   name: config.name
   parent: apimService
   properties: {
@@ -375,7 +375,7 @@ resource backendOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-01-pr
   }
 }]
 
-resource backendPoolOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = if(length(openAIConfig_1) > 1) {
+resource backendPoolOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if(length(openAIConfig_1) > 1) {
   name: openAIBackendPoolName_1
   parent: apimService
   #disable-next-line BCP035
@@ -391,7 +391,7 @@ resource backendPoolOpenAI_1 'Microsoft.ApiManagement/service/backends@2023-05-0
   }
 }
 
-resource backendPoolOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = if(length(openAIConfig_2) > 1) {
+resource backendPoolOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if(length(openAIConfig_2) > 1) {
   name: openAIBackendPoolName_2
   parent: apimService
   #disable-next-line BCP035
@@ -407,7 +407,7 @@ resource backendPoolOpenAI_2 'Microsoft.ApiManagement/service/backends@2023-05-0
   }
 }
 
-resource backendPoolOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-01-preview' = if(length(openAIConfig_3) > 1) {
+resource backendPoolOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if(length(openAIConfig_3) > 1) {
   name: openAIBackendPoolName_3
   parent: apimService
   #disable-next-line BCP035
@@ -423,7 +423,7 @@ resource backendPoolOpenAI_3 'Microsoft.ApiManagement/service/backends@2023-05-0
   }
 }
 
-resource apimSubscription 'Microsoft.ApiManagement/service/subscriptions@2023-05-01-preview' = {
+resource apimSubscription 'Microsoft.ApiManagement/service/subscriptions@2023-09-01-preview' = {
   name: openAISubscriptionName
   parent: apimService
   properties: {

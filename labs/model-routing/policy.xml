@@ -1,35 +1,57 @@
 <policies>
     <inbound>
         <base />
-        <set-backend-service backend-id="@{
-            // Determine what backend pool we use.
-            switch(context.Request.MatchedParameters["deployment-id"]) {
-                case "gpt-35-turbo-1106":
-                    return "{backend-id-1}";
-
-                case "gpt-35-turbo-0125":
-                    return "{backend-id-2}";
-
-                case "gpt-4o-2024-05-13":
-                    return "{backend-id-3}";
-
-                default:
-                    return "{backend-id-1}";
-            }
+        <!--1) Enforce token limits for the subscription.-->
+        <azure-openai-token-limit tokens-per-minute="3000" counter-key="@(context.Subscription.Id)" estimate-prompt-tokens="true" tokens-consumed-header-name="consumed-tokens" remaining-tokens-header-name="remaining-tokens" />
+        <!--2) Set up backend connection-->
+        <!--2-1) Identify a matched backend or backend pool for the desired deployment id.-->
+        <set-variable name="backend" value="@{
+            var key = context.Request.MatchedParameters["deployment-id"];
+            var mappings = "{{Deployment-to-Model-Mapping}}";
+            var mappingsDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(mappings);
+            return mappingsDict.TryGetValue(key, out var value) ? value : null;
         }" />
-
+        <!--2-2) If a backend could not be determined, return a 400 to the caller; otherwise, set the backend.-->
+        <choose>
+            <when condition="@(context.Variables["backend"] == null)">
+                <return-response>
+                    <set-status code="400" reason="Bad Request" />
+                    <set-body>@($"Deployment {context.Request.MatchedParameters["deployment-id"]} is not configured.")</set-body>
+                </return-response>
+            </when>
+            <otherwise>
+                <set-backend-service backend-id="@((string)context.Variables["backend"])" />
+            </otherwise>
+        </choose>
+        <!--2-3) Obtain the managed identity to authenticate into Azure Open AI.-->
         <authentication-managed-identity resource="https://cognitiveservices.azure.com" output-token-variable-name="managed-id-access-token" ignore-error="false" />
         <set-header name="Authorization" exists-action="override">
             <value>@("Bearer " + (string)context.Variables["managed-id-access-token"])</value>
         </set-header>
+        <!--3) Set up token tracking.-->
+        <azure-openai-emit-token-metric namespace="myopenaiemitmetrics2">
+            <dimension name="Subscription ID" />
+            <dimension name="AI Deployment ID" value="@(context.Request.MatchedParameters.GetValueOrDefault("deployment-id", ""))" />
+        </azure-openai-emit-token-metric>
     </inbound>
     <backend>
-        <base />
+        <!--Set count to one less than the number of backends in the pool to try all backends until the backend pool is temporarily unavailable.-->
+        <retry count="2" interval="0" first-fast-retry="true" condition="@(context.Response.StatusCode == 429 || (context.Response.StatusCode == 503 && !context.Response.StatusReason.Contains("Backend pool") && !context.Response.StatusReason.Contains("is temporarily unavailable")))">
+            <forward-request buffer-request-body="true" />
+        </retry>
     </backend>
     <outbound>
         <base />
     </outbound>
     <on-error>
         <base />
+        <choose>
+            <!--Return a generic error that does not reveal backend pool details.-->
+            <when condition="@(context.Response.StatusCode == 503)">
+                <return-response>
+                    <set-status code="503" reason="Service Unavailable" />
+                </return-response>
+            </when>
+        </choose>
     </on-error>
 </policies>
