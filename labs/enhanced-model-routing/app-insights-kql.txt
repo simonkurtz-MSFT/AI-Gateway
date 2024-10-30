@@ -1,0 +1,14 @@
+let TimeInterval = 1d;
+let TimeBinFormat = "yyyy-MM-dd";
+customMetrics
+| extend SubscriptionID = tostring(customDimensions["Subscription ID"]),
+         AIDeploymentID = tostring(customDimensions["AI Deployment ID"]),
+         TimeBin = bin(timestamp, TimeInterval)
+| where SubscriptionID != "" and AIDeploymentID != ""
+| summarize TotalTokens = sumif(value, name == "Total Tokens"),
+            CompletionTokens = sumif(value, name == "Completion Tokens"),
+            PromptTokens = sumif(value, name == "Prompt Tokens")
+            by SubscriptionID, AIDeploymentID, TimeBin
+| extend Date = format_datetime(TimeBin, TimeBinFormat)
+| project ["Subscription ID"] = SubscriptionID, ["AI Deployment ID"] = AIDeploymentID, Date, TotalTokens, CompletionTokens, PromptTokens
+| order by ["Subscription ID"], ["AI Deployment ID"], Date desc

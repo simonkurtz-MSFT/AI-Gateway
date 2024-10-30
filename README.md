@@ -89,6 +89,12 @@ Acknowledging the rising dominance of Python, particularly in the realm of AI, a
 | [🦾 Bicep](labs/model-routing/main.bicep) ➕ [⚙️ Policy](labs/model-routing/policy.xml) ➕ [🧾 Notebook](labs/model-routing/model-routing.ipynb) 🟰 [💬](../../issues/37 "Feedback loop discussion") | [🦾 Bicep](labs/prompt-flow/main.bicep) ➕ [⚙️ Policy](labs/prompt-flow/policy.xml) ➕ [🧾 Notebook](labs/prompt-flow/prompt-flow.ipynb) 🟰 [💬](../../issues/38 "Feedback loop discussion") |
 |  |  |
 |  |  |
+| [**🧪 Enhanced Model Routing**](labs/enhanced-model-routing/enhanced-model-routing.ipynb) |  |
+| [![flow](images/model-routing-small.gif)](labs/model-routing/model-routing.ipynb)  |  |
+| Playground that combines multiple labs in an enhanced model routing flow. |  |
+| [🦾 Bicep](labs/enhanced-model-routing/main.bicep) ➕ [⚙️ Policy](labs/enhanced-model-routing/policy.xml) ➕ [🧾 Notebook](labs/enhanced-model-routing/model-routing.ipynb) 🟰 [💬](../../issues/37 "Feedback loop discussion") |  |
+|  |  |
+|  |  |
 
 ### Backlog of experiments
 

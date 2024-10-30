@@ -1,0 +1,6 @@
+{
+    "gpt-35-turbo-0125": "oai-backend-pool-gpt-35-turbo-0125",
+    "gpt-35-turbo-1106": "oai-backend-pool-gpt-35-turbo-1106",
+    "gpt-4o-2024-05-13": "oai-backend-pool-gpt-4o-2024-05-13",
+    "instruction-manual-search": "oai-backend-pool-instruction-manual-search"
+}
