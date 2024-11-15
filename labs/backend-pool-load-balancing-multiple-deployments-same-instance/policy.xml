@@ -5,7 +5,7 @@
         <set-header name="Authorization" exists-action="override">
             <value>@("Bearer " + (string)context.Variables["managed-id-access-token"])</value>
         </set-header>
-        <set-backend-service backend-id="openai-backend-pool" />
+        <!-- <set-backend-service backend-id="openai-backend-pool" /> -->
     </inbound>
     <backend>
         <!--Set count to one less than the number of backends in the pool to try all backends until the backend pool is temporarily unavailable.-->
