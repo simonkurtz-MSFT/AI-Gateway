@@ -214,7 +214,7 @@ resource backendOpenAI 'Microsoft.ApiManagement/service/backends@2023-09-01-prev
     parent: apimService
     properties: {
       description: 'Azure OpenAI backend for ${config.name} with deployment ${config.deploymentName}'
-      url: '${cognitiveServices[config.cognitiveServicesIndex].properties.endpoint}openai/${config.deploymentName}'
+      url: '${cognitiveServices[config.cognitiveServicesIndex].properties.endpoint}openai/deployments/${config.deploymentName}'
       protocol: 'http'
       circuitBreaker: {
         rules: [
