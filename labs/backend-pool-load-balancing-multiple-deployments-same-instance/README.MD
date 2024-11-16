@@ -1,10 +1,8 @@
 # APIM ❤️ OpenAI
 
-## [Backend pool Load Balancing lab](backend-circuit-breaking.ipynb)
+## [Backend pool Load Balancing Multiple Deployments on same Azure OpenAI Instances lab]
 
-[![flow](../../images/backend-pool-load-balancing.gif)](backend-pool-load-balancing.ipynb)
-
-Playground to try the built-in load balancing [backend pool functionality of APIM](https://learn.microsoft.com/en-us/azure/api-management/backends?tabs=bicep) to either a list of Azure OpenAI endpoints or mock servers.
+Playground to try the built-in load balancing [backend pool functionality of APIM](https://learn.microsoft.com/en-us/azure/api-management/backends?tabs=bicep) where two Azure OpenAI endpoints both host the same deployments.
 
 ### Result
 
@@ -21,7 +19,7 @@ Playground to try the built-in load balancing [backend pool functionality of API
 
 ### 🚀 Get started
 
-Proceed by opening the [Jupyter notebook](backend-pool-load-balancing.ipynb), and follow the steps provided.
+Proceed by opening the [Jupyter notebook](backend-pool-load-balancing-multiple-deployments-same-instance.ipynb), and follow the steps provided.
 
 ### 🗑️ Clean up resources
 
