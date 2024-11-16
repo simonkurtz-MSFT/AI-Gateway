@@ -1,12 +1,8 @@
 # APIM ❤️ OpenAI
 
-## [Backend pool Load Balancing Multiple Deployments on same Azure OpenAI Instances lab]
+## Backend pool Load Balancing Multiple Deployments on same Azure OpenAI Instances lab
 
 Playground to try the built-in load balancing [backend pool functionality of APIM](https://learn.microsoft.com/en-us/azure/api-management/backends?tabs=bicep) where two Azure OpenAI endpoints both host the same deployments.
-
-### Result
-
-![result](result.png)
 
 ### Prerequisites
 
