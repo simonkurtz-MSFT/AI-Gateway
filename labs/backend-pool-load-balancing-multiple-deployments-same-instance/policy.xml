@@ -5,7 +5,15 @@
         <set-header name="Authorization" exists-action="override">
             <value>@("Bearer " + (string)context.Variables["managed-id-access-token"])</value>
         </set-header>
-        <!-- <set-backend-service backend-id="openai-backend-pool" /> -->
+        <!--Dynamically select the backend pool based on the passed deployment-id.-->
+        <set-backend-service backend-id="@('openai-backend-pool-' + context.Request.MatchedParameters['deployment-id'])" />
+        <!--The backend url is of form https://openai1-vd2q3hyse4q3s.openai.azure.com/openai/gpt-35-turbo-0613. We need the rewrite-uri policy to ensure we remove the model (in form of the context.Request.MatchedParameters['deployment-id'])-->
+        <rewrite-uri template="@{
+            var deploymentId = context.Request.MatchedParameters['deployment-id'];
+            var originalPath = context.Request.OriginalUrl.Path;
+            var newPath = originalPath.Replace('/openai/' + deploymentId, '').Replace('/openai', '');
+            return newPath;
+        }" />
     </inbound>
     <backend>
         <!--Set count to one less than the number of backends in the pool to try all backends until the backend pool is temporarily unavailable.-->
